@@ -32,7 +32,7 @@ def picgen(agrv):
 
     # fetch quotes from source
 
-    quotes = cwd + "/quotes1.txt"
+    quotes = cwd + "/quotes.txt"
     f = open(quotes)
     num_lines = len(f.readlines())
 
@@ -47,12 +47,18 @@ def picgen(agrv):
             print("Error: \""+str(k)+"\" is not a integer!")
             exit(0)
     elif "-t" in argv:
-        k = agrv.index("-t")
+
+        for i in argv:
+            if "[" in i:
+                start = argv.index(i)
+            if "]" in i:
+                end = argv.index(i)
         try:
-            q = argv[k+1]
-        except IndexError:
-            print("Darn son, put some int after that -t")
+            q = (" ".join(argv[start:end+1])).strip("[]")
+        except UnboundLocalError:
+            print("Darn son, put some brackets!")
             exit(0)
+
     else:
         q = str(linecache.getline(quotes, randint(1, num_lines)))
     q = q.replace("\\n", "\n")
@@ -82,14 +88,14 @@ def picgen(agrv):
         except IndexError:
             print("Darn son, put some int after that -z")
             exit(0)
-        try:
-            h = sizedict[j]
-        except KeyError:
-            print("Size isn't either a number or \"huge\"/ \"small\"")
-            exit(0)
         if j.isnumeric():
-            h = j
-
+            h = int(j)
+        else:
+            try:
+                h = sizedict[j]
+            except KeyError:
+                print("Size isn't either a number or \"huge\"/ \"small\"")
+                exit(0)
     else:
         h = 36
 
@@ -116,6 +122,7 @@ def picgen(agrv):
 
     if "-w" in argv:
         save(name)
+    exit(0)
 
 
 def save(name):
@@ -159,7 +166,9 @@ hellp = """Usage:
 -w                                 = Set as current wallpaper. (Experimental..)
 -z [small | huge | value]          = set text sixe (Note = Default is 36, but it automatically shrinks text to fit in.
                                     So this comes really handy just you use the -s option.
--t [text]                          = Use your custom text and ignore quotes.txt. Can't obviously be used with -l"""
+-t [text]                          = Use your custom text and ignore quotes.txt. Can't obviously be used with -l
+                                    Wrap your text inside two square brakets [text]. (buggy, watch out for bash shit son
+                                    """
 
 
 if __name__ == "__main__":
